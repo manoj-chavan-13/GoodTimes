@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:goodtimes/database/hive_boxes.dart';
 import 'package:goodtimes/core/themes/app_theme.dart';
+import 'package:goodtimes/providers/theme_provider.dart';
 import 'package:goodtimes/features/home/screens/home_screen.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
@@ -72,15 +73,21 @@ class _GoodTimeAppState extends ConsumerState<GoodTimeApp> with WindowListener {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: MaterialApp(
-            title: 'GoodTime',
-            theme: AppTheme.darkTheme,
-            themeMode: ThemeMode.dark, // Enforce dark cinematic theme
-            debugShowCheckedModeBanner: false,
-            home: const HomeScreen(),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final themeMode = ref.watch(themeProvider);
+              return MaterialApp(
+                title: 'GoodTime',
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeMode,
+                debugShowCheckedModeBanner: false,
+                home: const HomeScreen(),
+              );
+            },
           ),
         ),
       ),

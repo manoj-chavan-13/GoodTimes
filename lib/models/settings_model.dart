@@ -21,7 +21,7 @@ class SettingsModel {
     return SettingsModel(
       autoResume: true,
       autoplay: false,
-      darkMode: true,
+      darkMode: false,
       autoScan: true,
       thumbnailQuality: 75,
       maxThumbnailJobs: 2,
