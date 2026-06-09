@@ -20,17 +20,33 @@ class CourseNotifier extends Notifier<List<CourseModel>> {
   }
 
   Future<int> addRootFolder() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory == null) return -1;
+    try {
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory == null) return -1;
 
-    // Scan root directory
-    int added = await ref.read(scanProvider).scanRootFolder(selectedDirectory);
-    
-    // Update state
-    final box = HiveBoxes.getCoursesBox();
-    state = box.values.toList();
-    
-    return added;
+      final box = HiveBoxes.getCoursesBox();
+      final normalizedSelected = selectedDirectory.toLowerCase().replaceAll('\\', '/');
+      
+      bool alreadyExists = box.values.any((course) {
+        final normalizedCourse = course.folderPath.toLowerCase().replaceAll('\\', '/');
+        return normalizedCourse == normalizedSelected;
+      });
+
+      if (alreadyExists) {
+        return -2;
+      }
+
+      // Scan root directory
+      int added = await ref.read(scanProvider).scanRootFolder(selectedDirectory);
+      
+      // Update state
+      state = box.values.toList();
+      
+      return added;
+    } catch (e) {
+      print('Error picking directory: $e');
+      return -1;
+    }
   }
 
   Future<void> removeCourse(String id) async {
