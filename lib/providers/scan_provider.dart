@@ -108,10 +108,10 @@ class ScanController {
       await coursesBox.put(course.id, course);
     }
     
-    // Start background thumbnail generation so it doesn't block UI
-    if (lecturesNeedingThumbnails.isNotEmpty) {
-      _startBackgroundThumbnailGeneration(lecturesNeedingThumbnails);
-    }
+    // Background thumbnail generation disabled to prevent MediaKit/libmpv native crashes
+    // if (lecturesNeedingThumbnails.isNotEmpty) {
+    //   _startBackgroundThumbnailGeneration(lecturesNeedingThumbnails);
+    // }
     
     return parsedCourses.length;
   }
