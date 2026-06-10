@@ -32,6 +32,16 @@ int _naturalCompare(String a, String b) {
 
 final lecturesProvider = Provider.family<List<LectureModel>, String>((ref, moduleId) {
   final box = HiveBoxes.getLecturesBox();
+  
+  // Reactively rebuild when a lecture inside this module changes in Hive
+  final sub = box.watch().listen((event) {
+    final val = event.value;
+    if (val is LectureModel && val.moduleId == moduleId) {
+      ref.invalidateSelf();
+    }
+  });
+  ref.onDispose(() => sub.cancel());
+
   final lectures = box.values.where((l) => l.moduleId == moduleId).toList();
   // Ensure sorted by natural order (e.g., 'Episode 2' before 'Episode 10')
   lectures.sort((a, b) => _naturalCompare(a.title, b.title));

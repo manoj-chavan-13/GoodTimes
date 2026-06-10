@@ -16,6 +16,12 @@ final historyProvider = NotifierProvider<HistoryNotifier, List<HistoryItem>>(() 
 class HistoryNotifier extends Notifier<List<HistoryItem>> {
   @override
   List<HistoryItem> build() {
+    final box = HiveBoxes.getLecturesBox();
+    final sub = box.watch().listen((_) {
+      state = _fetchHistory();
+    });
+    ref.onDispose(() => sub.cancel());
+
     return _fetchHistory();
   }
 
