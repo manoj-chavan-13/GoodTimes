@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:uuid/uuid.dart';
+
 
 class ParsedLecture {
   final String title;
@@ -30,9 +28,7 @@ class ScannerService {
   static const List<String> supportedExtensions = [
     '.mp4', '.mkv', '.avi', '.mov', '.m4v', '.webm', '.flv', '.wmv'
   ];
-  Future<String> _generateVideoThumbnail(String videoPath) async {
-    return ''; // Moved to background process in scan_provider
-  }
+
 
   String _findThumbnail(String path) {
     final possibleThumbs = ['thumbnail.jpg', 'thumbnail.png', 'cover.jpg', 'cover.png', 'poster.jpg', 'poster.png'];
@@ -50,7 +46,14 @@ class ScannerService {
 
     try {
       // 1. Check if Root Folder itself has videos directly (Root -> Videos)
-      final rootFiles = rootDir.listSync(followLinks: false).whereType<File>().toList();
+      List<FileSystemEntity> rootEntities = [];
+      try {
+        rootEntities = rootDir.listSync(followLinks: false);
+      } catch (e) {
+        print('Error listing root directory files: $e');
+      }
+
+      final rootFiles = rootEntities.whereType<File>().toList();
       rootFiles.sort((a, b) => a.path.compareTo(b.path));
       List<ParsedLecture> rootLectures = [];
       for (var file in rootFiles) {
@@ -68,14 +71,21 @@ class ScannerService {
       }
 
       // 2. Iterate over subdirectories of Root
-      final subDirs = rootDir.listSync(followLinks: false).whereType<Directory>().toList();
+      final subDirs = rootEntities.whereType<Directory>().toList();
       subDirs.sort((a, b) => a.path.compareTo(b.path));
 
       for (var courseDir in subDirs) {
         List<ParsedModule> modules = [];
+        List<FileSystemEntity> courseEntities = [];
+        try {
+          courseEntities = courseDir.listSync(followLinks: false);
+        } catch (e) {
+          print('Error listing course directory ${courseDir.path}: $e');
+          continue; // Skip this course directory if inaccessible, but continue with others
+        }
         
         // Check if courseDir has videos directly (Root -> Course -> Videos)
-        final courseFiles = courseDir.listSync(followLinks: false).whereType<File>().toList();
+        final courseFiles = courseEntities.whereType<File>().toList();
         courseFiles.sort((a, b) => a.path.compareTo(b.path));
         List<ParsedLecture> directLectures = [];
         for (var file in courseFiles) {
@@ -88,10 +98,18 @@ class ScannerService {
         }
 
         // Check if courseDir has subdirectories (Root -> Course -> Module -> Videos)
-        final moduleDirs = courseDir.listSync(followLinks: false).whereType<Directory>().toList();
+        final moduleDirs = courseEntities.whereType<Directory>().toList();
         moduleDirs.sort((a, b) => a.path.compareTo(b.path));
         for (var moduleDir in moduleDirs) {
-          final moduleFiles = moduleDir.listSync(followLinks: false).whereType<File>().toList();
+          List<FileSystemEntity> moduleEntities = [];
+          try {
+            moduleEntities = moduleDir.listSync(followLinks: false);
+          } catch (e) {
+            print('Error listing module directory ${moduleDir.path}: $e');
+            continue; // Skip this module directory if inaccessible, but continue with others
+          }
+
+          final moduleFiles = moduleEntities.whereType<File>().toList();
           moduleFiles.sort((a, b) => a.path.compareTo(b.path));
           List<ParsedLecture> moduleLectures = [];
           for (var file in moduleFiles) {
