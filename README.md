@@ -25,12 +25,25 @@ With an emphasis on a premium, cinematic user experience, GoodTime transforms di
 
 ## 📥 Download & Installation
 
-1. **Download the App:** You can download the latest pre-compiled Release ZIP file.
-2. **Extract:** Unzip the downloaded file to a folder of your choice (e.g., `Desktop` or `Documents`).
-3. **Run:** Double-click on `playit.exe` to launch the application.
+You can install GoodTime in two ways: via the direct MSIX installer or by downloading the portable ZIP file.
+
+### Option 1: Direct Installer (Recommended)
+1. Go to the [Releases](https://github.com/manoj-chavan-13/GoodTimes/releases) page.
+2. Download the `GoodTime-Installer.msix` file from the latest release.
+3. **Important Note on Installation:** Because this is a self-signed open-source application, you need to trust the developer certificate to install it:
+   - Right-click the downloaded `.msix` file -> **Properties** -> **Digital Signatures** tab.
+   - Select the signature, click **Details**, then **View Certificate**, and click **Install Certificate**.
+   - Choose **Local Machine**, and click **Browse** to select **Trusted Root Certification Authorities**.
+   - After a successful import, double-click the `.msix` file to install it seamlessly as a native Windows app!
+
+### Option 2: Portable ZIP
+1. Go to the [Releases](https://github.com/manoj-chavan-13/GoodTimes/releases) page.
+2. Download the `GoodTime-Windows-Release.zip` file.
+3. Extract the contents to any folder (e.g., your Desktop or Documents).
+4. Double-click `playit.exe` to launch the application.
 
 > **⚠️ Windows SmartScreen Warning (Please Read)**
-> Because this application is newly created, open-source, and not digitally signed with an expensive enterprise certificate, Windows Defender SmartScreen might show a blue warning screen saying "Windows protected your PC". 
+> If you see a blue warning screen saying "Windows protected your PC", it simply means the app isn't digitally signed with an expensive enterprise certificate. 
 > **To bypass this:** Click on **"More info"** and then click **"Run anyway"**. 
 
 ## 🔒 Your Data is Safe (100% Offline)
