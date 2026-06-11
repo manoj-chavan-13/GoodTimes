@@ -16,7 +16,7 @@ class ScanController {
 
   ScanController(this.ref);
 
-  Future<void> scanRootFolder(String rootPath) async {
+  Future<int> scanRootFolder(String rootPath) async {
     final parsedCourses = await _scannerService.scanRootFolder(rootPath);
     
     final coursesBox = HiveBoxes.getCoursesBox();
@@ -91,5 +91,6 @@ class ScanController {
       course.lastScanned = DateTime.now();
       await coursesBox.put(course.id, course);
     }
+    return parsedCourses.length;
   }
 }

@@ -266,6 +266,7 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
     ];
 
     return MaterialDesktopVideoControlsTheme(
+      key: ValueKey(lecture.id),
       normal: MaterialDesktopVideoControlsThemeData(
         topButtonBar: topBar,
         bottomButtonBar: bottomBar,

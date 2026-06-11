@@ -33,8 +33,20 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.add_circle_outline, color: Colors.white),
             title: const Text('Add New Folder', style: TextStyle(fontWeight: FontWeight.w600)),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white54),
-            onTap: () {
-              ref.read(coursesProvider.notifier).addRootFolder();
+            onTap: () async {
+              final added = await ref.read(coursesProvider.notifier).addRootFolder();
+              if (!context.mounted) return;
+              if (added == -1) {
+                // Cancelled
+              } else if (added == 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No courses or videos found in the selected folder.'), backgroundColor: Colors.orange),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Successfully added $added course(s).'), backgroundColor: Colors.green),
+                );
+              }
             },
           ),
           ...courses.map((course) => ListTile(

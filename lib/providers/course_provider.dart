@@ -15,16 +15,18 @@ class CourseNotifier extends Notifier<List<CourseModel>> {
     return box.values.toList();
   }
 
-  Future<void> addRootFolder() async {
+  Future<int> addRootFolder() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory == null) return;
+    if (selectedDirectory == null) return -1;
 
     // Scan root directory
-    await ref.read(scanProvider).scanRootFolder(selectedDirectory);
+    int added = await ref.read(scanProvider).scanRootFolder(selectedDirectory);
     
     // Update state
     final box = HiveBoxes.getCoursesBox();
     state = box.values.toList();
+    
+    return added;
   }
 
   Future<void> removeCourse(String id) async {
