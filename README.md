@@ -23,6 +23,31 @@ With an emphasis on a premium, cinematic user experience, GoodTime transforms di
 - **Custom Window Controls:** A sleek, borderless, frameless window experience with custom minimize, maximize, and close controls built seamlessly into the UI.
 - **100% Offline First:** Built entirely for local media consumption. No internet connection required. All watch history and metadata are securely stored locally on your machine.
 
+## 📸 See It In Action (Simple but the Best)
+
+<div align="center">
+  <img src="website/assets/screenshots/image.png" alt="Home Screen" width="800" style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"/>
+  <br/>
+  <i>Sleek, Netflix-inspired interface with dynamic auto-generated thumbnails.</i>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="website/assets/screenshots/image%20copy.png" alt="Screenshot 2" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/image%20copy%202.png" alt="Screenshot 3" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+</div>
+
+<div align="center" style="margin-top: 15px;">
+  <img src="website/assets/screenshots/image%20copy%203.png" alt="Screenshot 4" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/image%20copy%204.png" alt="Screenshot 5" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+</div>
+
+<div align="center" style="margin-top: 15px;">
+  <img src="website/assets/screenshots/image%20copy%205.png" alt="Screenshot 6" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/image%20copy%206.png" alt="Screenshot 7" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+</div>
+
 ## 📥 Download & Installation
 
 You can install GoodTime in two ways: via the direct MSIX installer or by downloading the portable ZIP file.
