@@ -12,6 +12,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final courses = ref.watch(coursesProvider);
     final titleStyle = Theme.of(context).textTheme.titleLarge?.copyWith(
           color: Theme.of(context).primaryColor,
           fontWeight: FontWeight.w800,
@@ -29,13 +30,48 @@ class SettingsScreen extends ConsumerWidget {
             title: Text('Folders', style: titleStyle),
           ),
           ListTile(
-            leading: const Icon(Icons.folder_open),
-            title: const Text('Manage Folders', style: TextStyle(fontWeight: FontWeight.w600)),
+            leading: const Icon(Icons.add_circle_outline, color: Colors.white),
+            title: const Text('Add New Folder', style: TextStyle(fontWeight: FontWeight.w600)),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white54),
             onTap: () {
-              ref.read(coursesProvider.notifier).addRootFolder(ref);
+              ref.read(coursesProvider.notifier).addRootFolder();
             },
           ),
+          ...courses.map((course) => ListTile(
+                leading: const Icon(Icons.movie_creation, color: Colors.white54),
+                title: Text(course.title, style: const TextStyle(color: Colors.white)),
+                subtitle: Text(course.folderPath, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: const Color(0xFF141414),
+                        title: const Text('Remove Folder?', style: TextStyle(color: Colors.white)),
+                        content: Text('Are you sure you want to remove "${course.title}" from your library?\n\n(Your local files will NOT be deleted.)', style: const TextStyle(color: Colors.white70)),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                            onPressed: () {
+                              ref.read(coursesProvider.notifier).removeCourse(course.id);
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Folder removed successfully.'), backgroundColor: Colors.green),
+                              );
+                            },
+                            child: const Text('Remove', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )).toList(),
           const SizedBox(height: 16),
           const Divider(color: Colors.white24),
           const SizedBox(height: 16),

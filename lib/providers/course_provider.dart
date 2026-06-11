@@ -15,7 +15,7 @@ class CourseNotifier extends Notifier<List<CourseModel>> {
     return box.values.toList();
   }
 
-  Future<void> addRootFolder(WidgetRef ref) async {
+  Future<void> addRootFolder() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return;
 
@@ -28,8 +28,24 @@ class CourseNotifier extends Notifier<List<CourseModel>> {
   }
 
   Future<void> removeCourse(String id) async {
-    final box = HiveBoxes.getCoursesBox();
-    await box.delete(id);
+    final coursesBox = HiveBoxes.getCoursesBox();
+    final modulesBox = HiveBoxes.getModulesBox();
+    final lecturesBox = HiveBoxes.getLecturesBox();
+
+    final course = coursesBox.get(id);
+    if (course != null) {
+      for (var moduleId in course.moduleIds) {
+        final module = modulesBox.get(moduleId);
+        if (module != null) {
+          for (var lectureId in module.lectureIds) {
+            await lecturesBox.delete(lectureId);
+          }
+          await modulesBox.delete(moduleId);
+        }
+      }
+    }
+
+    await coursesBox.delete(id);
     state = state.where((c) => c.id != id).toList();
   }
 }

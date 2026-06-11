@@ -70,6 +70,7 @@ class PlayerController {
 
     // Update lecture model as well
     final lecturesBox = HiveBoxes.getLecturesBox();
+    lecture.duration = dur;
     lecture.watchProgressPercentage = (percent * 100).toInt();
     lecture.lastPositionSeconds = pos.inSeconds;
     lecture.lastWatched = DateTime.now();

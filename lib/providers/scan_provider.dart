@@ -57,8 +57,10 @@ class ScanController {
           LectureModel? lecture = lecturesBox.values.where((l) => l.filePath == parsedLecture.filePath).firstOrNull;
           
           if (lecture == null) {
-            final metadata = await _metadataService.extractMetadata(parsedLecture.filePath);
-            final duration = metadata['duration'] as Duration? ?? Duration.zero;
+            // Disabled metadata extraction during scan to prevent MediaKit crashes
+            // and speed up the scanning process significantly.
+            // Duration will be updated when the video is played.
+            final duration = Duration.zero;
             
             lecture = LectureModel(
               id: const Uuid().v4(),

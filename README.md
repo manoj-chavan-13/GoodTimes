@@ -1,110 +1,69 @@
-# 🎬 GoodTime Media Player
+# GoodTime Media Player 🎬
 
-<div align="center">
-  <img src="lib/assets/favicon.png" alt="GoodTime Logo" width="120" />
-</div>
+GoodTime is a beautiful, Netflix-inspired desktop media player specifically designed for organizing, managing, and watching your offline downloaded lectures, courses, and educational content.
 
-<h3 align="center">A premium, Netflix-inspired desktop media player built with Flutter.</h3>
-
-<div align="center">
-
-  [![Flutter](https://img.shields.io/badge/Flutter-3.12-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
-  [![Dart](https://img.shields.io/badge/Dart-3.0-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
-  [![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#-download--install)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](https://makeapullrequest.com)
-  
-</div>
-
----
-
-**GoodTime** (also known as PlayIt) is a production-ready Windows desktop application designed to provide a cinematic, immersive media viewing experience for your local files. Featuring a stunning Netflix-inspired UI, cinematic radial gradients, and minimalist controls, GoodTime makes watching your local video library feel like a premium streaming service.
+With an emphasis on a premium, cinematic user experience, GoodTime transforms disorganized folders of downloaded videos into a sleek, professional streaming-platform-like interface—completely offline.
 
 ## ✨ Features
 
-- **📺 Netflix-Inspired UI**: A cinematic interface with dark mode, smooth transitions, and dynamic layouts.
-- **📂 Automatic Folder Scanning**: Quickly scan and organize your local video courses, movies, and series.
-- **🎞️ Advanced Video Playback**: Powered by `media_kit` for robust, hardware-accelerated playback of all major video formats.
-- **⚙️ Playback Controls**: Granular control over playback speed, volume, and seamless seeking.
-- **🧠 Smart Autoplay & Caching**: Seamlessly transition between episodes and remember where you left off.
-- **🎨 Custom Aesthetics**: Minimalist, theme-aware controls with premium micro-animations.
+- **Netflix-Inspired UI:** A cinematic, premium interface featuring dynamic gradients, smooth hover effects, royal color palettes, and auto-generated dynamic thumbnails.
+- **Smart Folder Scanning:** Simply point the application to your root directory containing your downloaded courses. GoodTime automatically parses the folder structure and neatly organizes everything into Courses, Modules, and Episodes.
+- **Intelligent "Continue Watching":** Automatically tracks your exact watch progress and position. The home screen presents a dynamic "Continue Watching" section that lets you resume right where you left off.
+- **Autoplay & Binge-Watching:** Seamlessly jumps to the next lecture—even across different modules—once the current episode finishes.
+- **Adjustable Playback Speed:** Essential for lectures and educational content; easily adjust playback speeds (0.5x, 0.75x, 1.0x, 1.25x, 1.5x, 2.0x) on the fly.
+- **Custom Window Controls:** A sleek, borderless, frameless window experience with custom minimize, maximize, and close controls built seamlessly into the UI.
+- **100% Offline First:** Built entirely for local media consumption. No internet connection required. All watch history and metadata are securely stored locally on your machine.
 
-## 📥 Download & Install
-
-You can easily download and run GoodTime on your Windows machine without dealing with installation certificates!
-
-1. Go to the [**Releases**](../../releases/latest) page of this repository.
-2. Download the latest `GoodTime-Windows-Portable.zip` file.
-3. Extract (unzip) the downloaded folder to a location of your choice (e.g., Documents or Desktop).
-4. Open the extracted folder and double-click `playit.exe` to launch the application.
-*(Tip: You can right-click `playit.exe` and select "Create shortcut" to put an icon on your desktop!)*
-
-## 🚀 How to Use
-
-1. **Launch the App**: Open GoodTime Media Player.
-2. **Add Content**: Go to the **Folders** or **Settings** section to select the directories where your videos are stored. 
-3. **Scan**: Let the app scan and organize your media.
-4. **Play**: Click on any video to start the cinematic player. Use the intuitive on-screen controls to adjust playback speed, volume, or skip forward/backward.
-
-## 🛠️ Built With
-
-* **[Flutter](https://flutter.dev/)** - UI Toolkit for building beautiful, natively compiled applications.
-* **[MediaKit](https://github.com/media-kit/media-kit)** - Video & audio playback library.
-* **[Riverpod](https://riverpod.dev/)** - Reactive state management framework.
-* **[Hive](https://pub.dev/packages/hive)** - Lightweight and blazing fast key-value database.
-
-## 🤝 Contributing
-
-We love open source! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. 
-
-**GoodTime is fully open for contributions!** If you have ideas for new features, UI enhancements, or bug fixes, feel free to contribute:
-
-1. **Fork the Project**
-2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
-5. **Open a Pull Request**
-
-Please make sure your code follows the existing style and that you've tested your changes.
-
-## 💻 Development Setup
-
-If you want to run the app locally or contribute to the code:
+## 🚀 Getting Started
 
 ### Prerequisites
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version 3.12.1 or higher)
-- Windows 10/11 with Visual Studio 2022 (with "Desktop development with C++" workload) for Windows desktop support.
 
-### Installation
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) installed on your system.
+- Windows Desktop development requirements (Visual Studio with C++ workload).
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/playit.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd playit
-   ```
-3. Install dependencies:
+### Installation & Build
+
+1. Clone this repository to your local machine.
+2. Navigate to the project directory and fetch dependencies:
    ```bash
    flutter pub get
    ```
-4. Run the app:
+3. Run the application in development mode:
    ```bash
    flutter run -d windows
    ```
+4. To build the final release executable:
+   ```bash
+   flutter build windows --release
+   ```
+   The generated executable will be located in `build/windows/x64/runner/Release/playit.exe` (or `goodtime.exe` depending on your executable name configuration).
 
-### Building the MSIX (For Release)
-If you are making a release build, run the following command to generate the `.msix` Windows installer:
-```bash
-flutter pub run msix:create
+## 🛠 Built With
+
+- **[Flutter](https://flutter.dev/)** - UI Toolkit for crafting natively compiled applications.
+- **[Riverpod](https://riverpod.dev/)** - Reactive caching and data-binding framework for state management.
+- **[MediaKit](https://github.com/media-kit/media-kit)** - High-performance video playback engine.
+- **[Hive](https://docs.hivedb.dev/)** - Lightweight and blazing fast local NoSQL database.
+- **[Window Manager](https://pub.dev/packages/window_manager)** - For custom frameless desktop window management.
+
+## 📁 Recommended Folder Structure
+
+To get the most out of GoodTime's automatic scanner, structure your offline downloads like this:
+```text
+Root Folder/
+│
+├── Course 1/
+│   ├── Module 1/
+│   │   ├── 01 - Introduction.mp4
+│   │   └── 02 - Basics.mp4
+│   └── Module 2/
+│       └── 01 - Advanced.mp4
+│
+└── Course 2/
+    └── Module 1/
+        └── 01 - Welcome.mp4
 ```
-This will create an installer in `build\windows\x64\runner\Release\goodtimes.msix`.
 
-## 📜 License
+## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-<div align="center">
-  <b>Made with ❤️ for beautiful UI and seamless playback.</b>
-</div>
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -27,54 +27,73 @@ class ScannerService {
     '.mp4', '.mkv', '.avi', '.mov', '.m4v', '.webm', '.flv', '.wmv'
   ];
 
+  String _findThumbnail(String path) {
+    final possibleThumbs = ['thumbnail.jpg', 'thumbnail.png', 'cover.jpg', 'cover.png', 'poster.jpg', 'poster.png'];
+    for (var name in possibleThumbs) {
+      final file = File(p.join(path, name));
+      if (file.existsSync()) return file.path;
+    }
+    return '';
+  }
+
   Future<List<ParsedCourse>> scanRootFolder(String rootPath) async {
     List<ParsedCourse> courses = [];
     final rootDir = Directory(rootPath);
     if (!await rootDir.exists()) return courses;
 
     try {
-      final courseEntities = rootDir.listSync(followLinks: false).whereType<Directory>().toList();
-      courseEntities.sort((a, b) => a.path.compareTo(b.path));
+      // 1. Check if Root Folder itself has videos directly (Root -> Videos)
+      final rootFiles = rootDir.listSync(followLinks: false).whereType<File>().toList();
+      rootFiles.sort((a, b) => a.path.compareTo(b.path));
+      List<ParsedLecture> rootLectures = [];
+      for (var file in rootFiles) {
+        if (supportedExtensions.contains(p.extension(file.path).toLowerCase())) {
+          rootLectures.add(ParsedLecture(title: p.basenameWithoutExtension(file.path), filePath: file.path));
+        }
+      }
+      if (rootLectures.isNotEmpty) {
+        courses.add(ParsedCourse(
+          title: p.basename(rootDir.path),
+          folderPath: rootDir.path,
+          thumbnailPath: _findThumbnail(rootDir.path),
+          modules: [ParsedModule(title: 'Main Content', folderPath: rootDir.path, lectures: rootLectures)],
+        ));
+      }
 
-      for (var courseDir in courseEntities) {
-        // Find thumbnail
-        String thumbPath = '';
-        final possibleThumbs = ['thumbnail.jpg', 'thumbnail.png'];
-        for (var name in possibleThumbs) {
-          final file = File(p.join(courseDir.path, name));
-          if (file.existsSync()) {
-            thumbPath = file.path;
-            break;
+      // 2. Iterate over subdirectories of Root
+      final subDirs = rootDir.listSync(followLinks: false).whereType<Directory>().toList();
+      subDirs.sort((a, b) => a.path.compareTo(b.path));
+
+      for (var courseDir in subDirs) {
+        List<ParsedModule> modules = [];
+        
+        // Check if courseDir has videos directly (Root -> Course -> Videos)
+        final courseFiles = courseDir.listSync(followLinks: false).whereType<File>().toList();
+        courseFiles.sort((a, b) => a.path.compareTo(b.path));
+        List<ParsedLecture> directLectures = [];
+        for (var file in courseFiles) {
+          if (supportedExtensions.contains(p.extension(file.path).toLowerCase())) {
+            directLectures.add(ParsedLecture(title: p.basenameWithoutExtension(file.path), filePath: file.path));
           }
         }
+        if (directLectures.isNotEmpty) {
+          modules.add(ParsedModule(title: 'Content', folderPath: courseDir.path, lectures: directLectures));
+        }
 
-        // Find modules
-        List<ParsedModule> modules = [];
-        final moduleEntities = courseDir.listSync(followLinks: false).whereType<Directory>().toList();
-        moduleEntities.sort((a, b) => a.path.compareTo(b.path));
-
-        for (var moduleDir in moduleEntities) {
-          // Find lectures
-          List<ParsedLecture> lectures = [];
-          final fileEntities = moduleDir.listSync(followLinks: false).whereType<File>().toList();
-          fileEntities.sort((a, b) => a.path.compareTo(b.path));
-
-          for (var file in fileEntities) {
-            final ext = p.extension(file.path).toLowerCase();
-            if (supportedExtensions.contains(ext)) {
-              lectures.add(ParsedLecture(
-                title: p.basenameWithoutExtension(file.path),
-                filePath: file.path,
-              ));
+        // Check if courseDir has subdirectories (Root -> Course -> Module -> Videos)
+        final moduleDirs = courseDir.listSync(followLinks: false).whereType<Directory>().toList();
+        moduleDirs.sort((a, b) => a.path.compareTo(b.path));
+        for (var moduleDir in moduleDirs) {
+          final moduleFiles = moduleDir.listSync(followLinks: false).whereType<File>().toList();
+          moduleFiles.sort((a, b) => a.path.compareTo(b.path));
+          List<ParsedLecture> moduleLectures = [];
+          for (var file in moduleFiles) {
+            if (supportedExtensions.contains(p.extension(file.path).toLowerCase())) {
+              moduleLectures.add(ParsedLecture(title: p.basenameWithoutExtension(file.path), filePath: file.path));
             }
           }
-
-          if (lectures.isNotEmpty) {
-            modules.add(ParsedModule(
-              title: p.basename(moduleDir.path),
-              folderPath: moduleDir.path,
-              lectures: lectures,
-            ));
+          if (moduleLectures.isNotEmpty) {
+            modules.add(ParsedModule(title: p.basename(moduleDir.path), folderPath: moduleDir.path, lectures: moduleLectures));
           }
         }
 
@@ -82,7 +101,7 @@ class ScannerService {
           courses.add(ParsedCourse(
             title: p.basename(courseDir.path),
             folderPath: courseDir.path,
-            thumbnailPath: thumbPath,
+            thumbnailPath: _findThumbnail(courseDir.path),
             modules: modules,
           ));
         }

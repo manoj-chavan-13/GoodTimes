@@ -328,20 +328,7 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 110,
-                          height: 62,
-                          decoration: BoxDecoration(
-                            color: isSelected ? primaryColor.withOpacity(0.2) : Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: isSelected ? primaryColor : Colors.transparent),
-                          ),
-                          child: Center(
-                            child: isSelected 
-                              ? Icon(Icons.play_arrow, color: primaryColor, size: 32)
-                              : Text('${index + 1}', style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.bold, fontSize: 18)),
-                          ),
-                        ),
+                        _buildEpisodeThumbnail(lecture.title, index, isSelected, lecture.watchProgressPercentage),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -373,6 +360,95 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
         )
       ],
     ),
+    );
+  }
+
+  Widget _buildEpisodeThumbnail(String title, int index, bool isSelected, int progress) {
+    int hash = 0;
+    for (int i = 0; i < title.length; i++) {
+      hash = title.codeUnitAt(i) + ((hash << 5) - hash);
+    }
+    
+    final List<List<Color>> gradients = [
+      [const Color(0xFF141E30), const Color(0xFF243B55)],
+      [const Color(0xFF0F2027), const Color(0xFF203A43), const Color(0xFF2C5364)],
+      [const Color(0xFF232526), const Color(0xFF414345)],
+      [const Color(0xFF000000), const Color(0xFF434343)],
+      [const Color(0xFF1D2B64), const Color(0xFFF8CDDA)], // Dark royal
+      [const Color(0xFF283c86), const Color(0xFF45a247)],
+      [const Color(0xFF1e130c), const Color(0xFF9a8478)],
+      [const Color(0xFF3a1c71), const Color(0xFFd76d77), const Color(0xFFffaf7b)],
+    ];
+    
+    final gradient = gradients[hash.abs() % gradients.length];
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return Container(
+      width: 110,
+      height: 62,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: isSelected ? primaryColor : Colors.white.withOpacity(0.1), width: isSelected ? 2 : 1),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradient,
+        ),
+        boxShadow: isSelected ? [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 8, spreadRadius: 1)] : null,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(7),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.0,
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                ),
+              ),
+            ),
+            Positioned(
+              right: -10,
+              bottom: -10,
+              child: Icon(Icons.movie, size: 50, color: Colors.white.withOpacity(0.05)),
+            ),
+            Center(
+              child: isSelected 
+                ? const Icon(Icons.play_arrow, color: Colors.white, size: 32)
+                : Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                    ),
+                    child: Text(
+                      'EP ${index + 1}', 
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1),
+                    ),
+                  ),
+            ),
+            if (progress > 0)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 3,
+                  color: Colors.white24,
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: progress / 100.0,
+                    child: Container(color: primaryColor),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

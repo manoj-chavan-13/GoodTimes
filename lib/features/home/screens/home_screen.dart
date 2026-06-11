@@ -271,6 +271,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ? DecorationImage(image: FileImage(File(featured.thumbnailPath)), fit: BoxFit.cover, alignment: Alignment.topCenter)
                 : null,
           ),
+          child: featured.thumbnailPath.isEmpty ? _buildAutoThumbnail(featured.title) : null,
         ),
         // Royal Vignette & Left Gradient
         Container(
@@ -392,7 +393,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(right: 16.0),
-                child: _buildHistoryCard(history[index]),
+                child: SizedBox(
+                  width: 320,
+                  child: _buildHistoryCard(history[index]),
+                ),
               );
             },
           ),
@@ -403,7 +407,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildHistoryCard(HistoryItem item) {
     int secondsLeft = item.lecture.duration.inSeconds - item.lecture.lastPositionSeconds;
-    int minutesLeft = secondsLeft > 0 ? (secondsLeft / 60).round() : 0;
+    String timeLeftText = '';
+    
+    if (item.lecture.duration.inSeconds <= 0) {
+      timeLeftText = 'Resume';
+    } else if (secondsLeft <= 0) {
+      timeLeftText = 'Completed';
+    } else {
+      int hoursLeft = secondsLeft ~/ 3600;
+      int minsLeft = (secondsLeft % 3600) ~/ 60;
+      if (hoursLeft > 0) {
+        timeLeftText = '${hoursLeft}h ${minsLeft}m left';
+      } else if (minsLeft > 0) {
+        timeLeftText = '${minsLeft}m left';
+      } else {
+        timeLeftText = '< 1m left';
+      }
+    }
     
     return HoverableCard(
       onTap: () {
@@ -425,16 +445,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ? DecorationImage(image: FileImage(File(item.course.thumbnailPath)), fit: BoxFit.cover)
                           : null,
                     ),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.2)),
-                        ),
-                        child: const Icon(Icons.play_arrow, color: Colors.white, size: 28),
+                    child: item.course.thumbnailPath.isEmpty
+                        ? _buildAutoThumbnail(item.course.title)
+                        : null,
+                  ),
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withOpacity(0.2)),
                       ),
+                      child: const Icon(Icons.play_arrow, color: Colors.white, size: 28),
                     ),
                   ),
                   Positioned(
@@ -473,7 +496,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               Flexible(child: Text(item.course.title.toUpperCase(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 12))),
               const SizedBox(width: 8),
-              Text('${minutesLeft}m left', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+              Text(timeLeftText, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             ],
           ),
         ],
@@ -518,7 +541,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await Future.delayed(const Duration(milliseconds: 100));
     
     try {
-      await ref.read(coursesProvider.notifier).addRootFolder(ref);
+      await ref.read(coursesProvider.notifier).addRootFolder();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Courses scanned successfully!'),
@@ -588,7 +611,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     : null,
               ),
               child: course.thumbnailPath.isEmpty
-                  ? Center(child: Text(course.title[0].toUpperCase(), style: const TextStyle(fontSize: 40, color: Colors.white10, fontWeight: FontWeight.bold)))
+                  ? _buildAutoThumbnail(course.title)
                   : null,
             ),
             // Cinematic shadow from bottom to make text readable
@@ -634,6 +657,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAutoThumbnail(String title) {
+    int hash = 0;
+    for (int i = 0; i < title.length; i++) {
+      hash = title.codeUnitAt(i) + ((hash << 5) - hash);
+    }
+    
+    final List<List<Color>> gradients = [
+      [const Color(0xFF8A2387), const Color(0xFFE94057), const Color(0xFFF27121)], // Sunset
+      [const Color(0xFF009FFF), const Color(0xFFec2F4B)], // Cyberpunk
+      [const Color(0xFF1D976C), const Color(0xFF93F9B9)], // Emerald
+      [const Color(0xFF11998e), const Color(0xFF38ef7d)], // Neon Green
+      [const Color(0xFF4568DC), const Color(0xFFB06AB3)], // Twilight
+      [const Color(0xFFff9966), const Color(0xFFff5e62)], // Peach
+      [const Color(0xFF0f0c29), const Color(0xFF302b63), const Color(0xFF24243e)], // Deep Space
+      [const Color(0xFFC33764), const Color(0xFF1D2671)], // Royal
+    ];
+    
+    final gradient = gradients[hash.abs() % gradients.length];
+    final String initial = title.isNotEmpty ? title[0].toUpperCase() : '?';
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradient,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Icon(Icons.movie_creation_outlined, size: 160, color: Colors.white.withOpacity(0.08)),
+          ),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withOpacity(0.25),
+                border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, spreadRadius: 5),
+                ],
+              ),
+              child: Text(
+                initial,
+                style: const TextStyle(
+                  fontSize: 42,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  shadows: [Shadow(color: Colors.black54, blurRadius: 10, offset: Offset(0, 4))],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
