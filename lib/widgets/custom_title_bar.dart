@@ -3,7 +3,13 @@ import 'package:window_manager/window_manager.dart';
 
 class CustomTitleBar extends StatefulWidget {
   final bool isTransparent;
-  const CustomTitleBar({super.key, this.isTransparent = false});
+  final String? title;
+  
+  const CustomTitleBar({
+    super.key, 
+    this.isTransparent = false,
+    this.title,
+  });
 
   @override
   State<CustomTitleBar> createState() => _CustomTitleBarState();
@@ -35,7 +41,31 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
           Expanded(
             child: GestureDetector(
               onPanStart: (details) => windowManager.startDragging(),
-              child: Container(color: Colors.transparent),
+              onDoubleTap: () async {
+                if (await windowManager.isMaximized()) {
+                  windowManager.unmaximize();
+                } else {
+                  windowManager.maximize();
+                }
+              },
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.only(left: 16),
+                alignment: Alignment.centerLeft,
+                child: widget.title != null
+                    ? Text(
+                        widget.title!,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : const SizedBox(),
+              ),
             ),
           ),
           Row(

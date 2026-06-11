@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goodtimes/providers/settings_provider.dart';
 import 'package:goodtimes/providers/course_provider.dart';
+import 'package:goodtimes/providers/history_provider.dart';
+import 'package:goodtimes/database/hive_boxes.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
@@ -135,6 +137,56 @@ class SettingsScreen extends ConsumerWidget {
                     const SnackBar(content: Text('Thumbnail cache cleared successfully.', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green),
                   );
                 }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white10,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              child: const Text('Clear'),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.history_toggle_off),
+            title: const Text('Clear Watch History', style: TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: const Text('Removes all watch progress and continue watching items', style: TextStyle(color: Colors.white54)),
+            trailing: ElevatedButton(
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: const Color(0xFF141414),
+                    title: const Text('Clear History?', style: TextStyle(color: Colors.white)),
+                    content: const Text('Are you sure you want to clear all your watch progress? This cannot be undone.', style: TextStyle(color: Colors.white70)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          final lecturesBox = HiveBoxes.getLecturesBox();
+                          for (var lecture in lecturesBox.values) {
+                            lecture.watchProgressPercentage = 0;
+                            lecture.lastPositionSeconds = 0;
+                            lecture.lastWatched = null;
+                            lecture.isCompleted = false;
+                            await lecturesBox.put(lecture.id, lecture);
+                          }
+                          await HiveBoxes.getPlaybackBox().clear();
+                          ref.read(historyProvider.notifier).refresh();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Watch history cleared successfully.', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green),
+                            );
+                          }
+                        },
+                        child: const Text('Clear', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white10,

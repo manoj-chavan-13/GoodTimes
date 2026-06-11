@@ -6,6 +6,10 @@ import 'package:goodtimes/models/lecture_model.dart';
 import 'package:goodtimes/services/scanner_service.dart';
 import 'package:goodtimes/services/metadata_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:path/path.dart' as p;
 
 final scanProvider = Provider((ref) => ScanController(ref));
 
@@ -22,6 +26,8 @@ class ScanController {
     final coursesBox = HiveBoxes.getCoursesBox();
     final modulesBox = HiveBoxes.getModulesBox();
     final lecturesBox = HiveBoxes.getLecturesBox();
+    
+    List<LectureModel> lecturesNeedingThumbnails = [];
     
     for (var parsedCourse in parsedCourses) {
       // Check if course exists by path
@@ -72,7 +78,17 @@ class ScanController {
               watchProgressPercentage: 0,
               lastPositionSeconds: 0,
               isCompleted: false,
+              thumbnailPath: parsedLecture.thumbnailPath,
             );
+          } else {
+            // Update thumbnail if empty
+            if (lecture.thumbnailPath.isEmpty && parsedLecture.thumbnailPath.isNotEmpty) {
+              lecture.thumbnailPath = parsedLecture.thumbnailPath;
+            }
+          }
+          
+          if (lecture.thumbnailPath.isEmpty) {
+            lecturesNeedingThumbnails.add(lecture);
           }
           
           await lecturesBox.put(lecture.id, lecture);
@@ -87,10 +103,56 @@ class ScanController {
 
       course.moduleIds = moduleIds;
       course.totalDurationMilliseconds = totalDuration;
-      course.thumbnailPath = parsedCourse.thumbnailPath; // Update in case it changed
+      // We will let the course use the first lecture's thumbnail later or auto thumbnail
       course.lastScanned = DateTime.now();
       await coursesBox.put(course.id, course);
     }
+    
+    // Start background thumbnail generation so it doesn't block UI
+    if (lecturesNeedingThumbnails.isNotEmpty) {
+      _startBackgroundThumbnailGeneration(lecturesNeedingThumbnails);
+    }
+    
     return parsedCourses.length;
+  }
+
+  void _startBackgroundThumbnailGeneration(List<LectureModel> lectures) async {
+    for (var lecture in lectures) {
+      try {
+        final docsDir = await getApplicationDocumentsDirectory();
+        final thumbDir = Directory(p.join(docsDir.path, 'GoodTime', 'Thumbnails'));
+        if (!await thumbDir.exists()) await thumbDir.create(recursive: true);
+        
+        final fileName = '${const Uuid().v4()}.jpeg';
+        final destFile = File(p.join(thumbDir.path, fileName));
+        
+        final player = Player();
+        await player.open(Media(lecture.filePath), play: false);
+        
+        await Future.delayed(const Duration(milliseconds: 200));
+        await player.seek(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 300));
+        
+        final screenshot = await player.screenshot();
+        await player.dispose();
+
+        if (screenshot != null && screenshot.isNotEmpty) {
+          await destFile.writeAsBytes(screenshot);
+          lecture.thumbnailPath = destFile.path;
+          
+          // Save to Hive
+          await HiveBoxes.getLecturesBox().put(lecture.id, lecture);
+          
+          // Also check if we need to update course thumbnail
+          final course = HiveBoxes.getCoursesBox().get(lecture.courseId);
+          if (course != null && course.thumbnailPath.isEmpty) {
+            course.thumbnailPath = destFile.path;
+            await HiveBoxes.getCoursesBox().put(course.id, course);
+          }
+        }
+      } catch (e) {
+        print('Background thumb error for ${lecture.title}: $e');
+      }
+    }
   }
 }

@@ -19,6 +19,7 @@ class PlayerController {
   late final Player player;
   late final VideoController controller;
   Timer? _progressTimer;
+  bool _isDisposed = false;
 
   PlayerController(this.lecture, this.ref) {
     player = Player();
@@ -28,6 +29,8 @@ class PlayerController {
 
   Future<void> _init() async {
     await player.open(Media(lecture.filePath));
+    
+    if (_isDisposed) return;
     
     // Resume progress if exists
     final settings = ref.read(settingsProvider);
@@ -79,6 +82,7 @@ class PlayerController {
   }
 
   void dispose() {
+    _isDisposed = true;
     _progressTimer?.cancel();
     _saveProgress();
     player.dispose();

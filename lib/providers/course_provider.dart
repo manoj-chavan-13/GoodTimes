@@ -15,6 +15,10 @@ class CourseNotifier extends Notifier<List<CourseModel>> {
     return box.values.toList();
   }
 
+  void refresh() {
+    state = HiveBoxes.getCoursesBox().values.toList();
+  }
+
   Future<int> addRootFolder() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return -1;

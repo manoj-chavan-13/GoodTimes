@@ -5,6 +5,7 @@ import 'package:goodtimes/database/hive_boxes.dart';
 import 'package:goodtimes/core/themes/app_theme.dart';
 import 'package:goodtimes/features/home/screens/home_screen.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,11 +38,34 @@ void main() async {
   );
 }
 
-class GoodTimeApp extends ConsumerWidget {
+class GoodTimeApp extends ConsumerStatefulWidget {
   const GoodTimeApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoodTimeApp> createState() => _GoodTimeAppState();
+}
+
+class _GoodTimeAppState extends ConsumerState<GoodTimeApp> with WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowClose() {
+    windowManager.destroy();
+    exit(0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
       child: ClipRRect(

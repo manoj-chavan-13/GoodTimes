@@ -9,6 +9,8 @@ import 'package:goodtimes/models/course_model.dart';
 import 'package:goodtimes/widgets/custom_title_bar.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
+import 'package:path/path.dart' as p;
+import 'package:goodtimes/providers/scan_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +23,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isScanning = false;
   int _selectedIndex = 0;
   bool _isSidebarCollapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _autoRescan();
+    });
+  }
+
+  Future<void> _autoRescan() async {
+    final courses = ref.read(coursesProvider);
+    if (courses.isEmpty) return;
+    
+    Set<String> rootFolders = courses.map((c) => p.dirname(c.folderPath)).toSet();
+    
+    setState(() => _isScanning = true);
+    try {
+      for (var path in rootFolders) {
+        await ref.read(scanProvider).scanRootFolder(path);
+      }
+      ref.read(coursesProvider.notifier).refresh();
+      ref.read(historyProvider.notifier).refresh();
+    } catch (e) {
+      print('Auto-rescan error: $e');
+    } finally {
+      if (mounted) setState(() => _isScanning = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,18 +218,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           _buildAllCoursesHeader(),
                           const SizedBox(height: 24),
                           Expanded(
-                            child: GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 24,
-                                mainAxisSpacing: 24,
-                                childAspectRatio: 1.5,
-                              ),
-                              itemCount: courses.length,
-                              itemBuilder: (context, index) {
-                                return _buildCourseCard(courses[index]);
-                              },
-                            ),
+                            child: courses.isEmpty
+                                ? Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.folder_open, size: 100, color: Colors.white24),
+                                        const SizedBox(height: 24),
+                                        const Text('You have not added any folders yet.', style: TextStyle(color: Colors.white70, fontSize: 24, fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 16),
+                                        ElevatedButton.icon(
+                                          onPressed: _handleAddFolder,
+                                          icon: const Icon(Icons.add, color: Colors.black),
+                                          label: const Text('Add New Folder', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : GridView.builder(
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 24,
+                                      mainAxisSpacing: 24,
+                                      childAspectRatio: 1.5,
+                                    ),
+                                    itemCount: courses.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildCourseCard(courses[index]);
+                                    },
+                                  ),
                           ),
                         ],
                       ),
@@ -214,18 +262,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const Text('Watch History', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                           const SizedBox(height: 24),
                           Expanded(
-                            child: GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 24,
-                                mainAxisSpacing: 24,
-                                childAspectRatio: 16 / 9,
-                              ),
-                              itemCount: history.length,
-                              itemBuilder: (context, index) {
-                                return _buildHistoryCard(history[index]);
-                              },
-                            ),
+                            child: history.isEmpty
+                                ? const Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.history_toggle_off, size: 100, color: Colors.white24),
+                                        SizedBox(height: 24),
+                                        Text('You have not watched anything yet.', style: TextStyle(color: Colors.white70, fontSize: 24, fontWeight: FontWeight.bold)),
+                                        SizedBox(height: 16),
+                                        Text('Play a video to show your history here.', style: TextStyle(color: Colors.white54, fontSize: 16)),
+                                      ],
+                                    ),
+                                  )
+                                : GridView.builder(
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 24,
+                                      mainAxisSpacing: 24,
+                                      childAspectRatio: 16 / 9,
+                                    ),
+                                    itemCount: history.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildHistoryCard(history[index]);
+                                    },
+                                  ),
                           ),
                         ],
                       ),
@@ -252,10 +313,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildHeroSection(List courses) {
     if (courses.isEmpty) {
       return Container(
-        height: 500,
+        height: 600,
         width: double.infinity,
         decoration: BoxDecoration(color: Theme.of(context).cardColor),
-        child: const Center(child: Icon(Icons.movie_creation_outlined, size: 100, color: Colors.white24)),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.movie_creation_outlined, size: 100, color: Colors.white24),
+              const SizedBox(height: 24),
+              const Text('You have not added any folders yet.', style: TextStyle(color: Colors.white70, fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _handleAddFolder,
+                icon: const Icon(Icons.add, color: Colors.black),
+                label: const Text('Add New Folder', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -331,8 +408,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CourseScreen(course: featured)));
+                    onPressed: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => CourseScreen(course: featured)));
+                      ref.read(historyProvider.notifier).refresh();
                     },
                     icon: const Icon(Icons.play_arrow, color: Colors.black, size: 32),
                     label: const Text('Play', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
@@ -368,7 +446,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildContinueWatching(List<HistoryItem> history) {
-    if (history.isEmpty) return const SizedBox.shrink();
+    if (history.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 48.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('Continue Watching', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                const SizedBox(width: 8),
+                Icon(Icons.arrow_forward_ios, size: 14, color: Theme.of(context).primaryColor),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              height: 150,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.02),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: const Center(
+                child: Text('You have not watched anything yet. Play a video to show your history here.', style: TextStyle(color: Colors.white54)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,8 +533,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     
     return HoverableCard(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CourseScreen(course: item.course)));
+      onTap: () async {
+        await Navigator.push(context, MaterialPageRoute(builder: (context) => CourseScreen(course: item.course)));
+        ref.read(historyProvider.notifier).refresh();
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -441,12 +549,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFF141414),
-                      image: item.course.thumbnailPath.isNotEmpty
-                          ? DecorationImage(image: FileImage(File(item.course.thumbnailPath)), fit: BoxFit.cover)
-                          : null,
+                      image: item.lecture.thumbnailPath.isNotEmpty
+                          ? DecorationImage(image: FileImage(File(item.lecture.thumbnailPath)), fit: BoxFit.cover)
+                          : item.course.thumbnailPath.isNotEmpty
+                              ? DecorationImage(image: FileImage(File(item.course.thumbnailPath)), fit: BoxFit.cover)
+                              : null,
                     ),
-                    child: item.course.thumbnailPath.isEmpty
-                        ? _buildAutoThumbnail(item.course.title)
+                    child: item.lecture.thumbnailPath.isEmpty && item.course.thumbnailPath.isEmpty
+                        ? _buildAutoThumbnail(item.lecture.title)
                         : null,
                   ),
                   Center(
@@ -481,6 +591,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
                         borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white, size: 18),
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(6),
+                        onPressed: () {
+                          ref.read(historyProvider.notifier).removeFromHistory(item.lecture);
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text('Removed from Continue Watching'),
+                            backgroundColor: Colors.grey,
+                            duration: Duration(seconds: 2),
+                          ));
+                        },
                       ),
                     ),
                   ),
@@ -567,7 +700,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (courses.isEmpty) {
       return const SizedBox(
         height: 180,
-        child: Center(child: Text('No courses found. Scan a root folder to begin.', style: TextStyle(color: Colors.white54))),
+        child: Center(child: Text('You have not added any folders yet. Add a new folder to begin.', style: TextStyle(color: Colors.white54))),
       );
     }
 
@@ -592,11 +725,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildCourseCard(CourseModel course) {
     return HoverableCard(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => CourseScreen(course: course)),
         );
+        ref.read(historyProvider.notifier).refresh();
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),

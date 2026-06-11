@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
@@ -29,11 +30,13 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
   @override
   void dispose() {
     _completedSub?.cancel();
+    windowManager.setTitle('GoodTime');
     super.dispose();
   }
 
   void _setLecture(LectureModel lecture) {
     setState(() => _currentLecture = lecture);
+    windowManager.setTitle('${widget.course.title} - ${lecture.title}');
     _completedSub?.cancel();
     
     Future.microtask(() {
@@ -116,7 +119,10 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          const CustomTitleBar(isTransparent: true),
+          CustomTitleBar(
+            isTransparent: true,
+            title: _currentLecture != null ? '${widget.course.title} - ${_currentLecture!.title}' : widget.course.title,
+          ),
           Expanded(
             child: Stack(
               children: [
@@ -329,7 +335,7 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buildEpisodeThumbnail(lecture.title, index, isSelected, lecture.watchProgressPercentage),
+                        _buildEpisodeThumbnail(lecture, index, isSelected),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -364,37 +370,21 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
     );
   }
 
-  Widget _buildEpisodeThumbnail(String title, int index, bool isSelected, int progress) {
-    int hash = 0;
-    for (int i = 0; i < title.length; i++) {
-      hash = title.codeUnitAt(i) + ((hash << 5) - hash);
-    }
-    
-    final List<List<Color>> gradients = [
-      [const Color(0xFF141E30), const Color(0xFF243B55)],
-      [const Color(0xFF0F2027), const Color(0xFF203A43), const Color(0xFF2C5364)],
-      [const Color(0xFF232526), const Color(0xFF414345)],
-      [const Color(0xFF000000), const Color(0xFF434343)],
-      [const Color(0xFF1D2B64), const Color(0xFFF8CDDA)], // Dark royal
-      [const Color(0xFF283c86), const Color(0xFF45a247)],
-      [const Color(0xFF1e130c), const Color(0xFF9a8478)],
-      [const Color(0xFF3a1c71), const Color(0xFFd76d77), const Color(0xFFffaf7b)],
-    ];
-    
-    final gradient = gradients[hash.abs() % gradients.length];
+  Widget _buildEpisodeThumbnail(LectureModel lecture, int index, bool isSelected) {
+    final title = lecture.title;
+    final progress = lecture.watchProgressPercentage;
     final primaryColor = Theme.of(context).primaryColor;
-
+    
     return Container(
       width: 110,
       height: 62,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: isSelected ? primaryColor : Colors.white.withOpacity(0.1), width: isSelected ? 2 : 1),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradient,
-        ),
+        color: const Color(0xFF141414),
+        image: lecture.thumbnailPath.isNotEmpty
+            ? DecorationImage(image: FileImage(File(lecture.thumbnailPath)), fit: BoxFit.cover)
+            : null,
         boxShadow: isSelected ? [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 8, spreadRadius: 1)] : null,
       ),
       child: ClipRRect(
@@ -407,15 +397,16 @@ class _CourseScreenState extends ConsumerState<CourseScreen> {
                 gradient: RadialGradient(
                   center: Alignment.center,
                   radius: 1.0,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.4)],
                 ),
               ),
             ),
-            Positioned(
-              right: -10,
-              bottom: -10,
-              child: Icon(Icons.movie, size: 50, color: Colors.white.withOpacity(0.05)),
-            ),
+            if (lecture.thumbnailPath.isEmpty)
+              Positioned(
+                right: -10,
+                bottom: -10,
+                child: Icon(Icons.movie, size: 50, color: Colors.white.withOpacity(0.05)),
+              ),
             Center(
               child: isSelected 
                 ? const Icon(Icons.play_arrow, color: Colors.white, size: 32)

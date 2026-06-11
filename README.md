@@ -23,14 +23,27 @@ With an emphasis on a premium, cinematic user experience, GoodTime transforms di
 - **Custom Window Controls:** A sleek, borderless, frameless window experience with custom minimize, maximize, and close controls built seamlessly into the UI.
 - **100% Offline First:** Built entirely for local media consumption. No internet connection required. All watch history and metadata are securely stored locally on your machine.
 
-## 🚀 Getting Started
+## 📥 Download & Installation
+
+1. **Download the App:** You can download the latest pre-compiled Release ZIP file.
+2. **Extract:** Unzip the downloaded file to a folder of your choice (e.g., `Desktop` or `Documents`).
+3. **Run:** Double-click on `playit.exe` to launch the application.
+
+> **⚠️ Windows SmartScreen Warning (Please Read)**
+> Because this application is newly created, open-source, and not digitally signed with an expensive enterprise certificate, Windows Defender SmartScreen might show a blue warning screen saying "Windows protected your PC". 
+> **To bypass this:** Click on **"More info"** and then click **"Run anyway"**. 
+
+## 🔒 Your Data is Safe (100% Offline)
+This application is **purely offline**. We do not collect, track, or send ANY of your data, files, or watch history over the internet. Everything runs locally on your machine and stays exactly where it belongs—with you. The entire source code is completely **open source**, so you can verify this yourself!
+
+## 🚀 Building from Source
 
 ### Prerequisites
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) installed on your system.
 - Windows Desktop development requirements (Visual Studio with C++ workload).
 
-### Installation & Build
+### Build Steps
 
 1. Clone this repository to your local machine.
 2. Navigate to the project directory and fetch dependencies:

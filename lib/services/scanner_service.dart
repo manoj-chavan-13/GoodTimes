@@ -1,10 +1,14 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:uuid/uuid.dart';
 
 class ParsedLecture {
   final String title;
   final String filePath;
-  ParsedLecture({required this.title, required this.filePath});
+  final String thumbnailPath;
+  ParsedLecture({required this.title, required this.filePath, this.thumbnailPath = ''});
 }
 
 class ParsedModule {
@@ -26,6 +30,9 @@ class ScannerService {
   static const List<String> supportedExtensions = [
     '.mp4', '.mkv', '.avi', '.mov', '.m4v', '.webm', '.flv', '.wmv'
   ];
+  Future<String> _generateVideoThumbnail(String videoPath) async {
+    return ''; // Moved to background process in scan_provider
+  }
 
   String _findThumbnail(String path) {
     final possibleThumbs = ['thumbnail.jpg', 'thumbnail.png', 'cover.jpg', 'cover.png', 'poster.jpg', 'poster.png'];
@@ -55,7 +62,7 @@ class ScannerService {
         courses.add(ParsedCourse(
           title: p.basename(rootDir.path),
           folderPath: rootDir.path,
-          thumbnailPath: _findThumbnail(rootDir.path),
+          thumbnailPath: rootLectures.isNotEmpty ? rootLectures.first.thumbnailPath : '',
           modules: [ParsedModule(title: 'Main Content', folderPath: rootDir.path, lectures: rootLectures)],
         ));
       }
@@ -101,9 +108,17 @@ class ScannerService {
           courses.add(ParsedCourse(
             title: p.basename(courseDir.path),
             folderPath: courseDir.path,
-            thumbnailPath: _findThumbnail(courseDir.path),
+            thumbnailPath: _findThumbnail(courseDir.path), // custom first
             modules: modules,
           ));
+          if (courses.last.thumbnailPath.isEmpty) {
+             courses.last = ParsedCourse(
+               title: courses.last.title,
+               folderPath: courses.last.folderPath,
+               thumbnailPath: modules.first.lectures.isNotEmpty ? modules.first.lectures.first.thumbnailPath : '',
+               modules: modules,
+             );
+          }
         }
       }
     } catch (e) {

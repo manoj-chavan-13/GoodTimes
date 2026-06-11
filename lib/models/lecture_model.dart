@@ -11,6 +11,7 @@ class LectureModel {
   int lastPositionSeconds;
   bool isCompleted;
   DateTime? lastWatched;
+  String thumbnailPath;
 
   LectureModel({
     required this.id,
@@ -23,6 +24,7 @@ class LectureModel {
     required this.lastPositionSeconds,
     required this.isCompleted,
     this.lastWatched,
+    this.thumbnailPath = '',
   });
 }
 
@@ -43,6 +45,7 @@ class LectureModelAdapter extends TypeAdapter<LectureModel> {
       lastPositionSeconds: reader.readInt(),
       isCompleted: reader.readBool(),
       lastWatched: reader.readBool() ? DateTime.fromMillisecondsSinceEpoch(reader.readInt()) : null,
+      thumbnailPath: reader.availableBytes > 0 ? reader.readString() : '',
     );
   }
 
@@ -62,5 +65,6 @@ class LectureModelAdapter extends TypeAdapter<LectureModel> {
     if (obj.lastWatched != null) {
       writer.writeInt(obj.lastWatched!.millisecondsSinceEpoch);
     }
+    writer.writeString(obj.thumbnailPath);
   }
 }
