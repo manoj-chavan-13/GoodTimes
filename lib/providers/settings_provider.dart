@@ -40,3 +40,16 @@ class SettingsNotifier extends Notifier<SettingsModel> {
     HiveBoxes.getSettingsBox().put('user_settings', state);
   }
 }
+
+final settingsActiveTabProvider = NotifierProvider<SettingsActiveTabNotifier, int>(() {
+  return SettingsActiveTabNotifier();
+});
+
+class SettingsActiveTabNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void setTab(int index) {
+    state = index;
+  }
+}
