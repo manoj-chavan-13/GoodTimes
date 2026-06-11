@@ -1,17 +1,33 @@
 <div align="center">
-  <img src="lib/assets/icon.png" alt="GoodTime Logo" width="120" style="margin-bottom: 20px;"/>
-  <h1>GoodTime Media Player</h1>
-  <p><strong>A beautiful, Netflix-inspired desktop media player specifically designed for organizing, managing, and watching your offline downloaded lectures, courses, and educational content.</strong></p>
-  <p>
-    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
-    <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
-    <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" />
+  <img src="lib/assets/icon.png" alt="GoodTime Logo" width="200" style="filter: drop-shadow(0 15px 15px rgba(229, 9, 20, 0.3)); margin-bottom: 20px; border-radius: 20px;"/>
+  
+  # GoodTime Media Player
+  
+  ### *Your Cinematic Offline Netflix Experience for Learning.*
+  
+  <br/>
+
+  <p align="center">
+    <strong>A breathtaking, Netflix-inspired desktop media player specifically designed for organizing, managing, and binge-watching your offline downloaded lectures, courses, and educational content.</strong>
+  </p>
+
+  <br/>
+
+  <p align="center">
+    <a href="https://github.com/manoj-chavan-13/GoodTimes/releases">
+      <img src="https://img.shields.io/badge/Download_Latest-Windows_MSIX-E50914?style=for-the-badge&logo=windows&logoColor=white" alt="Download MSIX" />
+    </a>
+    <a href="https://github.com/manoj-chavan-13/GoodTimes/releases">
+      <img src="https://img.shields.io/badge/Download_Portable-ZIP_Archive-333333?style=for-the-badge&logo=folder&logoColor=white" alt="Download ZIP" />
+    </a>
+    <img src="https://img.shields.io/badge/Built_With-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
+    <img src="https://img.shields.io/badge/100%25-Offline_Secure-4CAF50?style=for-the-badge&logo=shield&logoColor=white" alt="Offline Safe" />
   </p>
 </div>
 
-<br/>
+<hr/>
 
-With an emphasis on a premium, cinematic user experience, GoodTime transforms disorganized folders of downloaded videos into a sleek, professional streaming-platform-like interface—completely offline.
+With an uncompromising emphasis on a premium, cinematic user experience, GoodTime magically transforms disorganized folders of downloaded videos into a sleek, professional streaming-platform-like interface—completely offline and safely on your local machine.
 
 ## ✨ Features
 
