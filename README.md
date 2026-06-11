@@ -1,4 +1,4 @@
-# 🎬 GoodTime Media Player (PlayIt)
+# 🎬 GoodTime Media Player
 
 <div align="center">
   <img src="lib/assets/favicon.png" alt="GoodTime Logo" width="120" />
