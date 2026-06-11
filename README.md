@@ -1,6 +1,15 @@
-# GoodTime Media Player 🎬
+<div align="center">
+  <img src="lib/assets/icon.png" alt="GoodTime Logo" width="120" style="margin-bottom: 20px;"/>
+  <h1>GoodTime Media Player</h1>
+  <p><strong>A beautiful, Netflix-inspired desktop media player specifically designed for organizing, managing, and watching your offline downloaded lectures, courses, and educational content.</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
+    <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+    <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" />
+  </p>
+</div>
 
-GoodTime is a beautiful, Netflix-inspired desktop media player specifically designed for organizing, managing, and watching your offline downloaded lectures, courses, and educational content.
+<br/>
 
 With an emphasis on a premium, cinematic user experience, GoodTime transforms disorganized folders of downloaded videos into a sleek, professional streaming-platform-like interface—completely offline.
 
