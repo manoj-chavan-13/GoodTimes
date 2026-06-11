@@ -30,12 +30,13 @@
 
 ## 📥 Download & Install
 
-You can easily download and install GoodTime on your Windows machine!
+You can easily download and run GoodTime on your Windows machine without dealing with installation certificates!
 
 1. Go to the [**Releases**](../../releases/latest) page of this repository.
-2. Download the latest `goodtimes.msix` file.
-3. Double-click the downloaded `.msix` file to install it on your Windows PC.
-4. Launch **GoodTime** from your Start menu and enjoy!
+2. Download the latest `GoodTime-Windows-Portable.zip` file.
+3. Extract (unzip) the downloaded folder to a location of your choice (e.g., Documents or Desktop).
+4. Open the extracted folder and double-click `playit.exe` to launch the application.
+*(Tip: You can right-click `playit.exe` and select "Create shortcut" to put an icon on your desktop!)*
 
 ## 🚀 How to Use
 
