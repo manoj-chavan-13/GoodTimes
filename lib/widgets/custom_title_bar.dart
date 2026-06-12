@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:goodtimes/providers/theme_provider.dart';
+import 'package:goodtimes/core/themes/app_colors.dart';
 
-class CustomTitleBar extends StatefulWidget {
+class CustomTitleBar extends ConsumerStatefulWidget {
   final bool isTransparent;
   final String? title;
   
@@ -12,10 +15,10 @@ class CustomTitleBar extends StatefulWidget {
   });
 
   @override
-  State<CustomTitleBar> createState() => _CustomTitleBarState();
+  ConsumerState<CustomTitleBar> createState() => _CustomTitleBarState();
 }
 
-class _CustomTitleBarState extends State<CustomTitleBar> {
+class _CustomTitleBarState extends ConsumerState<CustomTitleBar> {
   bool _isMaximized = false;
 
   @override
@@ -31,10 +34,13 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       height: 24, // Minimal height
       decoration: BoxDecoration(
-        color: widget.isTransparent ? Colors.transparent : const Color(0xFF141414),
+        color: widget.isTransparent ? Colors.transparent : AppColors.bg(context),
       ),
       child: Row(
         children: [
@@ -55,8 +61,8 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
                 child: widget.title != null
                     ? Text(
                         widget.title!,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: AppColors.textMuted(context),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,
@@ -71,18 +77,22 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
           Row(
             children: [
               _buildBtn(
-                Container(width: 10, height: 1, color: Colors.white70),
+                Icon(isDark ? Icons.light_mode : Icons.dark_mode, color: AppColors.textMuted(context), size: 14),
+                () => ref.read(themeProvider.notifier).toggleTheme(),
+              ),
+              _buildBtn(
+                Container(width: 10, height: 1, color: AppColors.textMuted(context)),
                 () => windowManager.minimize(),
               ),
               _buildBtn(
                 _isMaximized
                     ? Stack(
                         children: [
-                          Positioned(top: 0, right: 0, child: Container(width: 8, height: 8, decoration: BoxDecoration(border: Border.all(color: Colors.white70, width: 1)))),
-                          Positioned(bottom: 0, left: 0, child: Container(width: 8, height: 8, decoration: BoxDecoration(color: widget.isTransparent ? Colors.transparent : const Color(0xFF141414), border: Border.all(color: Colors.white70, width: 1)))),
+                          Positioned(top: 0, right: 0, child: Container(width: 8, height: 8, decoration: BoxDecoration(border: Border.all(color: AppColors.textMuted(context), width: 1)))),
+                          Positioned(bottom: 0, left: 0, child: Container(width: 8, height: 8, decoration: BoxDecoration(color: widget.isTransparent ? Colors.transparent : theme.scaffoldBackgroundColor, border: Border.all(color: AppColors.textMuted(context), width: 1)))),
                         ],
                       )
-                    : Container(width: 10, height: 10, decoration: BoxDecoration(border: Border.all(color: Colors.white70, width: 1))),
+                    : Container(width: 10, height: 10, decoration: BoxDecoration(border: Border.all(color: AppColors.textMuted(context), width: 1))),
                 () async {
                   if (await windowManager.isMaximized()) {
                     windowManager.unmaximize();
@@ -94,7 +104,7 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
                 },
               ),
               _buildBtn(
-                const Icon(Icons.close, color: Colors.white70, size: 14),
+                Icon(Icons.close, color: AppColors.textMuted(context), size: 14),
                 () => windowManager.close(),
                 isClose: true,
               ),
@@ -110,7 +120,7 @@ class _CustomTitleBarState extends State<CustomTitleBar> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        hoverColor: isClose ? const Color(0xFFE81123) : Colors.white.withOpacity(0.1),
+        hoverColor: isClose ? const Color(0xFFE81123) : AppColors.borderStrong(context),
         child: SizedBox(
           width: 46,
           height: 24,
