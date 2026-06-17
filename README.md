@@ -32,10 +32,12 @@ With an uncompromising emphasis on a premium, cinematic user experience, GoodTim
 ## ✨ Features
 
 - **Netflix-Inspired UI:** A cinematic, premium interface featuring dynamic gradients, smooth hover effects, royal color palettes, and auto-generated dynamic thumbnails.
+- **Smooth Cinematic Transitions:** Experience seamless cross-fades and elegant slide animations throughout the app—from opening courses and switching lectures to collapsing the sidebar—delivering a truly premium, native feel.
 - **Smart Folder Scanning:** Simply point the application to your root directory containing your downloaded courses. GoodTime automatically parses the folder structure and neatly organizes everything into Courses, Modules, and Episodes.
 - **Intelligent "Continue Watching":** Automatically tracks your exact watch progress and position. The home screen presents a dynamic "Continue Watching" section that lets you resume right where you left off.
 - **Autoplay & Binge-Watching:** Seamlessly jumps to the next lecture—even across different modules—once the current episode finishes.
-- **Adjustable Playback Speed:** Essential for lectures and educational content; easily adjust playback speeds (0.5x, 0.75x, 1.0x, 1.25x, 1.5x, 2.0x) on the fly.
+- **Adjustable Playback Speed:** Essential for lectures and educational content; easily adjust playback speeds (0.5x, 0.75x, 1.0x, 1.25x, 1.5x, 2.0x) on the fly with convenient keyboard shortcuts.
+- **Dedicated About & Settings Modules:** Built-in screens for managing preferences, learning keyboard shortcuts, and exploring application details right from the sidebar.
 - **Custom Window Controls:** A sleek, borderless, frameless window experience with custom minimize, maximize, and close controls built seamlessly into the UI.
 - **100% Offline First:** Built entirely for local media consumption. No internet connection required. All watch history and metadata are securely stored locally on your machine.
 
