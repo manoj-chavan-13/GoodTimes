@@ -44,7 +44,7 @@ With an uncompromising emphasis on a premium, cinematic user experience, GoodTim
 ## 📸 See It In Action (Simple but the Best)
 
 <div align="center">
-  <img src="website/assets/screenshots/image.png" alt="Home Screen" width="800" style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"/>
+  <img src="website/assets/screenshots/screenshot1.png" alt="Home Screen" width="800" style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"/>
   <br/>
   <i>Sleek, Netflix-inspired interface with dynamic auto-generated thumbnails.</i>
 </div>
@@ -52,18 +52,18 @@ With an uncompromising emphasis on a premium, cinematic user experience, GoodTim
 <br/>
 
 <div align="center">
-  <img src="website/assets/screenshots/image%20copy.png" alt="Screenshot 2" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
-  <img src="website/assets/screenshots/image%20copy%202.png" alt="Screenshot 3" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+  <img src="website/assets/screenshots/screenshot2.png" alt="Screenshot 2" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/screenshot3.png" alt="Screenshot 3" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
 </div>
 
 <div align="center" style="margin-top: 15px;">
-  <img src="website/assets/screenshots/image%20copy%203.png" alt="Screenshot 4" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
-  <img src="website/assets/screenshots/image%20copy%204.png" alt="Screenshot 5" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+  <img src="website/assets/screenshots/screenshot4.png" alt="Screenshot 4" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/screenshot5.png" alt="Screenshot 5" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
 </div>
 
 <div align="center" style="margin-top: 15px;">
-  <img src="website/assets/screenshots/image%20copy%205.png" alt="Screenshot 6" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
-  <img src="website/assets/screenshots/image%20copy%206.png" alt="Screenshot 7" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
+  <img src="website/assets/screenshots/screenshot6.png" alt="Screenshot 6" width="48%" style="border-radius: 10px; margin-right: 1%;"/>
+  <img src="website/assets/screenshots/screenshot7.png" alt="Screenshot 7" width="48%" style="border-radius: 10px; margin-left: 1%;"/>
 </div>
 
 ## 📥 Download & Installation
