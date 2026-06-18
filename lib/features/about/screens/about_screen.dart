@@ -199,7 +199,7 @@ class _AppHeroCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'v1.0.1 Stable  •  Windows Desktop',
+                  'v1.0.2 Stable  •  Windows Desktop',
                   style: TextStyle(
                     color: AppColors.textMuted(context),
                     fontSize: 12,
